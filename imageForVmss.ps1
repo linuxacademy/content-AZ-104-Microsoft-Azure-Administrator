@@ -2,9 +2,9 @@ $scaleSetName = "labVMSS1"
 
 $subnet = New-AzVirtualNetworkSubnetConfig -Name "defaultSubnet" -AddressPrefix 10.0.0.0/24
 
-$vnet = New-AzVirtualNetwork -ResourceGroupName $resourceGroupName -Name "labVnet1" -Location $location -AddressPrefix 10.0.0.0/16 -Subnet $subnet
+$vnet = New-AzVirtualNetwork -ResourceGroupName $rg -Name "labVnet1" -Location $location -AddressPrefix 10.0.0.0/16 -Subnet $subnet
 
-$publicIP = New-AzPublicIpAddress -ResourceGroupName $resourceGroupName -Location $location -AllocationMethod Static -Name "labPubIp"
+$publicIP = New-AzPublicIpAddress -ResourceGroupName $rg -Location $location -AllocationMethod Static -Name "labPubIp"
 
 $frontendIP = New-AzLoadBalancerFrontendIpConfig -Name "fePool" -PublicIpAddress $publicIP
 
@@ -12,7 +12,7 @@ $backendPool = New-AzLoadBalancerBackendAddressPoolConfig -Name "bePool"
 
 $inboundNATPool = New-AzLoadBalancerInboundNatPoolConfig -Name "RDPRule1" -FrontendIpConfigurationId $frontendIP.Id -Protocol TCP -FrontendPortRangeStart 50001 -FrontendPortRangeEnd 50010 -BackendPort 3389
 
-$lb = New-AzLoadBalancer -ResourceGroupName $resourceGroupName -Name "myLoadBalancer" -Location $location -FrontendIpConfiguration $frontendIP -BackendAddressPool $backendPool -InboundNatPool $inboundNATPool
+$lb = New-AzLoadBalancer -ResourceGroupName $rg -Name "myLoadBalancer" -Location $location -FrontendIpConfiguration $frontendIP -BackendAddressPool $backendPool -InboundNatPool $inboundNATPool
 
 Add-AzLoadBalancerProbeConfig -Name "lbHealthProbe" -LoadBalancer $lb -Protocol TCP -Port 80 -IntervalInSeconds 15 -ProbeCount 2
 
@@ -28,4 +28,4 @@ Set-AzVmssStorageProfile $vmssConfig -OsDiskCreateOption "FromImage" -ImageRefer
 
 Add-AzVmssNetworkInterfaceConfiguration -VirtualMachineScaleSet $vmssConfig -Name "network-config" -Primary $true -IPConfiguration $ipConfig
 
-New-AzVmss -ResourceGroupName $resourceGroupName -Name $scaleSetName -VirtualMachineScaleSet $vmssConfig
+New-AzVmss -ResourceGroupName $rg -Name $scaleSetName -VirtualMachineScaleSet $vmssConfig
