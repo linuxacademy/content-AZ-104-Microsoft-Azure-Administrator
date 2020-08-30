@@ -6,8 +6,11 @@ const PORT = 8080;
 const HOST = '0.0.0.0';
 
 const app = express();
+app.set('views', 'views');
+app.set('view engine', 'pug');
 app.get('/', (req, res) => {
-  res.send('Hello world\n');
+  res.render('home.pug', {
+  });
 });
 
 app.listen(PORT, HOST);
