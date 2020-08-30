@@ -1,11 +1,20 @@
-FROM node:8
+FROM centos:centos7
 
-WORKDIR /usr/src/app
+LABEL MAINTAINER=nigelpoulton@hotmail.com
 
-COPY package*.json ./
-RUN npm ci --only=production
+# Install Node etc...
+RUN yum -y update; yum clean all
+RUN yum -y install epel-release; yum clean all
+RUN yum -y install nodejs npm; yum clean all
 
-COPY . .
+# Copy source code to /src in container
+COPY . /src
 
+# Install app and dependencies into /src in container
+RUN cd /src; npm install
+
+# Document the port the app listens on
 EXPOSE 8080
-CMD [ "npm", "start" ]
+
+# Run this command (starts the app) when the container starts
+CMD cd /src && node ./app.js
